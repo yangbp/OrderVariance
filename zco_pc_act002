@@ -1,0 +1,73 @@
+*&---------------------------------------------------------------------*
+*& Report ZCO_PC_ACT001
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zco_pc_act002.
+
+TABLES: aufk,afpo,zbv_ko_var_sum_v,bkpf,t001.
+
+DATA: gt_pv TYPE TABLE OF zco_pc_act002_alv,
+      gs_pv LIKE LINE OF gt_pv.
+
+DATA: gr_alv       TYPE REF TO cl_salv_table,
+      gr_functions
+        TYPE REF TO cl_salv_functions_list.
+
+DATA: lr_layout TYPE REF TO cl_salv_layout,
+      ls_key    TYPE salv_s_layout_key.
+
+SELECT-OPTIONS: s_bukrs FOR t001-bukrs,
+                s_gjper FOR zbv_ko_var_sum_v-gjper,
+                s_aufnr FOR aufk-aufnr.
+PARAMETERS: p_layout TYPE slis_vari.
+
+START-OF-SELECTION.
+* select data in internal table
+
+  SELECT  * FROM   zbv_ko_var_rep_v
+    INTO CORRESPONDING FIELDS OF TABLE gt_pv
+    WHERE  gjper IN s_gjper
+    AND    bukrs IN s_bukrs
+    AND    aufnr IN s_aufnr.
+
+* create the ALV object
+  cl_salv_table=>factory(
+    IMPORTING
+      r_salv_table   = gr_alv
+    CHANGING
+      t_table        = gt_pv
+         ).
+
+* set default set of generic functions
+  gr_functions = gr_alv->get_functions( ).
+  gr_functions->set_all( ).
+
+* get the LAYOUT object
+  lr_layout = gr_alv->get_layout( ).
+* set the layout key
+  ls_key-report = sy-cprog.
+  lr_layout->set_key( value = ls_key ).
+
+* set save restriction
+*  (none restriction is intended, so we may use the default)
+  lr_layout->set_save_restriction(
+    value  = if_salv_c_layout=>restrict_none
+         ).
+
+* allow setting a default layout
+  lr_layout->set_default( value = 'X' ).
+
+* set initial layout
+  IF p_layout IS NOT INITIAL.
+    lr_layout->set_initial_layout( value = p_layout ).
+  ENDIF.
+* Customized Toolbar
+*从程序 SAPLSALV_METADATA_STATUS 复制 SALV_TABLE_STANDARD, 否则会报错（对象不存在）
+  CALL METHOD gr_alv->set_screen_status
+    EXPORTING
+      pfstatus = 'SALV_TABLE_STANDARD'
+      report   = sy-repid.
+
+* display it!
+  gr_alv->display( ).
