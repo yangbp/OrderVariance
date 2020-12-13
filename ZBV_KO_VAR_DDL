@@ -1,0 +1,31 @@
+@AbapCatalog.sqlViewName: 'ZBV_KO_VAR_V'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Production Order Variance'
+define view ZBV_KO_VAR_DDL
+  as select from acdoca as _a
+{
+  _a.rbukrs                                         as bukrs,
+  _a.gjahr,
+  _a.belnr,
+  _a.docln,
+  _a.buzei,
+  _a.awref,
+  _a.awitem,
+  _a.fiscyearper                                    as gjper,
+  _a.aufnr,
+  _a.racct,
+  _a.hsl,
+  case when _a.racct = '5101990200' then _a.hsl end as hsl_mat_p,
+  case when _a.racct = '5101990300' then _a.hsl end as hsl_mat_q,
+  case when _a.racct = '5101990400' then _a.hsl end as hsl_mat_r,
+  case when _a.racct = '5101990500' then _a.hsl end as hsl_mat_o,
+  case when _a.racct = '5101990600' then _a.hsl end as hsl_dl_p,
+  case when _a.racct = '5101990700' then _a.hsl end as hsl_dl_q,
+  case when _a.racct = '5101990800' then _a.hsl end as hsl_dl_r,
+  case when _a.racct = '5101990900' then _a.hsl end as hsl_o
+
+}
+where
+  _a.racct between '5101990200' and '5101990900'
