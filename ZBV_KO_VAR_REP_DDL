@@ -1,0 +1,30 @@
+@AbapCatalog.sqlViewName: 'ZBV_KO_VAR_REP_V'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Variance  Report'
+define view ZBV_KO_VAR_REP_DDL as select from ZBV_KO_VAR_SUM_DDL as _pc
+
+
+    inner join   aufk   as _k on _k.aufnr = _pc.aufnr
+    inner join   afpo   as _p on _p.aufnr = _pc.aufnr
+ {
+    _pc.bukrs,
+    _pc.gjahr,
+    _pc.gjper,
+    _pc.aufnr,
+    _k.idat2,
+    _p.matnr,
+    _k.ktext,
+    _p.psmng,
+    _pc.hsl as hslt,
+    _pc.hsl_mat_p,
+    _pc.hsl_mat_q,
+    _pc.hsl_mat_r,
+    _pc.hsl_mat_o,
+    _pc.hsl_dl_p,
+    _pc.hsl_dl_q,
+    _pc.hsl_dl_r,
+    _pc.hsl_o
+    
+}
