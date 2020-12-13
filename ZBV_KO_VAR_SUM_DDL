@@ -1,0 +1,28 @@
+@AbapCatalog.sqlViewName: 'ZBV_KO_VAR_SUM_V'
+@AbapCatalog.compiler.compareFilter: true
+@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Variance Summarized'
+define view ZBV_KO_VAR_SUM_DDL
+  as select from ZBV_KO_VAR_DDL as _var
+{
+  _var.bukrs,
+  _var.gjahr,
+  _var.gjper,
+  _var.aufnr,
+
+  sum(_var.hsl)       as hsl,
+  sum(_var.hsl_mat_p) as hsl_mat_p,
+  sum(_var.hsl_mat_q) as hsl_mat_q,
+  sum(_var.hsl_mat_r) as hsl_mat_r,
+  sum(_var.hsl_mat_o) as hsl_mat_o,
+  sum(_var.hsl_dl_p)  as hsl_dl_p,
+  sum(_var.hsl_dl_q)  as hsl_dl_q,
+  sum(_var.hsl_dl_r)  as hsl_dl_r,
+  sum(_var.hsl_o)     as hsl_o
+}
+group by
+  _var.bukrs,
+  _var.gjahr,
+  _var.gjper,
+  _var.aufnr
